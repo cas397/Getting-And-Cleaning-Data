@@ -1,0 +1,23 @@
+library(dplyr)
+library(tidyr)
+features <- read.table("~/R/UCI HAR Dataset/features.txt", header = FALSE, sep = " ")
+features <- as.character(features[ , 2])
+testData <- read.table("~/R/UCI HAR Dataset/test/X_test.txt")
+trainData <- read.table("~/R/UCI HAR Dataset/train/X_train.txt")
+colnames(testData) <- features
+colnames(trainData) <- features
+testActivity <- read.table("~/R/UCI HAR Dataset/test/y_test.txt")
+trainActivity <- read.table("~/R/UCI HAR Dataset/train/y_train.txt")
+testUser <- read.table("~/R/UCI HAR Dataset/test/subject_test.txt")
+trainUser <- read.table("~/R/UCI HAR Dataset/train/subject_train.txt")
+colnames(testActivity) <- c("Activity")
+colnames(trainActivity) <- c("Activity")
+colnames(testUser) <- c("User")
+colnames(trainUser) <- c("User")
+testData <- bind_cols(testUser, testActivity, testData)
+trainData <- bind_cols(trainUser, trainActivity, trainData)
+Data <- rbind(testData, trainData)
+Mean_or_Std <- grepl("mean", names(Data)) | grepl("std", names(Data)) | grepl("Activity", names(Data)) | grepl("User", names(Data))
+Data <- Data[ , Mean_or_Std]
+activity_label <- read.table("~/R/UCI HAR Dataset/activity_labels.txt")
+Data <- mutate(Data, Activity = activity_label[Activity, 2])
